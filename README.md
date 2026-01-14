@@ -1,13 +1,15 @@
 # Au Pair Scraper Config Generator
 
-A simple web-based configuration generator for the Au Pair in America candidate scraper. This tool runs entirely in the browser - no credentials are ever sent to any server.
+A web-based configuration generator for the Au Pair in America candidate scraper with automatic GitHub saving.
 
 ## Features
 
-- 🔒 **Privacy-First**: All data stays in your browser, nothing is sent to servers
+- 🔒 **Secure Storage**: Automatically saves configs to private GitHub repository
 - 📝 **Easy Config Generation**: User-friendly form to create scraper configuration
-- ⚡ **Instant Download**: Download your `aupair-config.json` file with one click
+- ⚡ **Auto-Save to GitHub**: Configs automatically committed to private repo
+- 💾 **Backup Download**: Fallback to local download if GitHub save fails
 - 🎨 **Clean Interface**: Beautiful, responsive design that works on all devices
+- 🔐 **Admin Panel**: Token configuration stored in browser localStorage
 
 ## Live Demo
 
@@ -15,11 +17,25 @@ Once deployed to Netlify, share the URL with users who need to generate their co
 
 ## How It Works
 
-1. Users visit the hosted website
+### For Admin (One-Time Setup):
+1. Create GitHub Personal Access Token with `repo` scope
+2. Deploy website to Netlify
+3. Configure admin settings with GitHub token
+4. Share Netlify URL with users
+
+### For Users:
+1. Visit the hosted website
 2. Fill in their Au Pair credentials and search preferences
-3. Click "Download Config File" to get `aupair-config.json`
-4. Place the config file in the scraper directory
-5. Run the scraper locally on their computer
+3. Click "Download Config File"
+4. Config automatically saves to your private GitHub repo
+
+### For You (Running Scraper):
+1. Check the private GitHub repo for new configs
+2. Download the config file
+3. Run the scraper locally with that config
+4. Get CSV results
+
+**See [SETUP.md](SETUP.md) for complete step-by-step setup instructions.**
 
 ## Deployment to Netlify
 
