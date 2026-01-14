@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Au Pair Scraper - Config Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .security-notice {
+      background: #e8f4fd;
+      border-left: 4px solid #3b82f6;
+      padding: 15px 20px;
+      margin: 20px;
+      border-radius: 4px;
+    }
+
+    .security-notice strong {
+      color: #1e40af;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .security-notice p {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .form-content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 35px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: #667eea;
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .label-required::after {
+      content: '*';
+      color: #ef4444;
+      margin-left: 4px;
+    }
+
+    .help-text {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .tag-input-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .tag-input-container input {
+      flex: 1;
+    }
+
+    .tag-input-container button {
+      padding: 12px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .tag-input-container button:hover {
+      background: #5568d3;
+    }
+
+    .tags-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      min-height: 30px;
+    }
+
+    .tag {
+      background: #e0e7ff;
+      color: #4338ca;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag button {
+      background: none;
+      border: none;
+      color: #4338ca;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tag button:hover {
+      color: #312e81;
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #f3f4f6;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .instructions {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .instructions strong {
+      color: #92400e;
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+      color: #78350f;
+    }
+
+    .instructions code {
+      background: #fde68a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Au Pair Scraper Config Generator</h1>
+      <p>Generate your configuration file to use with the Au Pair candidate scraper</p>
+    </div>
+
+    <div class="security-notice">
+      <strong>🔒 Privacy & Security</strong>
+      <p>All information entered on this page stays in your browser. Nothing is sent to any server. Your credentials are only saved in the downloaded config file on your computer.</p>
+    </div>
+
+    <div class="form-content">
+      <form id="configForm">
+        <!-- Credentials Section -->
+        <div class="section">
+          <div class="section-title">Login Credentials</div>
+
+          <div class="form-group">
+            <label for="username" class="label-required">Email / Username</label>
+            <input type="email" id="username" required placeholder="your.email@example.com">
+            <div class="help-text">Your Au Pair in America login email</div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="label-required">Password</label>
+            <input type="password" id="password" required placeholder="Enter your password">
+            <div class="help-text">Your Au Pair in America password</div>
+          </div>
+        </div>
+
+        <!-- Search Filters Section -->
+        <div class="section">
+          <div class="section-title">Search Filters (Optional)</div>
+
+          <div class="two-column">
+            <div class="form-group">
+              <label for="ageMin">Minimum Age</label>
+              <input type="number" id="ageMin" placeholder="18" min="18" max="30">
+            </div>
+
+            <div class="form-group">
+              <label for="ageMax">Maximum Age</label>
+              <input type="number" id="ageMax" placeholder="26" min="18" max="30">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nationalityInput">Nationalities</label>
+            <div class="tag-input-container">
+              <input type="text" id="nationalityInput" placeholder="e.g., Brazil, Colombia, Germany">
+              <button type="button" onclick="addTag('nationality')">Add</button>
+            </div>
+            <div class="tags-display" id="nationalityTags"></div>
+            <div class="help-text">Press Enter or click Add to add each nationality</div>
+          </div>
+
+          <div class="form-group">
+            <label for="languageInput">Languages</label>
+            <div class="tag-input-container">
+              <input type="text" id="languageInput" placeholder="e.g., English, Spanish, French">
+              <button type="button" onclick="addTag('language')">Add</button>
+            </div>
+            <div class="tags-display" id="languageTags"></div>
+            <div class="help-text">Languages the candidate should speak</div>
+          </div>
+
+          <div class="form-group">
+            <label>Skills</label>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="skill-driving" value="driving">
+                <label for="skill-driving">Driving</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="skill-swimming" value="swimming">
+                <label for="skill-swimming">Swimming</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="skill-cooking" value="cooking">
+                <label for="skill-cooking">Cooking</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="childcareExp">Childcare Experience</label>
+            <select id="childcareExp">
+              <option value="">Any experience level</option>
+              <option value="none">No experience</option>
+              <option value="some">Some experience</option>
+              <option value="1+ years">1+ years</option>
+              <option value="2+ years">2+ years</option>
+              <option value="3+ years">3+ years</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="infantExp">
+              Must have infant experience
+            </label>
+          </div>
+
+          <div class="two-column">
+            <div class="form-group">
+              <label for="availableFrom">Available From Date</label>
+              <input type="date" id="availableFrom">
+            </div>
+
+            <div class="form-group">
+              <label for="availableUntil">Available Until Date</label>
+              <input type="date" id="availableUntil">
+            </div>
+          </div>
+        </div>
+
+        <!-- Scraper Settings Section -->
+        <div class="section">
+          <div class="section-title">Scraper Settings</div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="testMode" checked>
+              Test Mode (recommended for first run)
+            </label>
+            <div class="help-text">Limits scraping to a small number of profiles for testing</div>
+          </div>
+
+          <div class="form-group">
+            <label for="testLimit">Test Mode Limit</label>
+            <input type="number" id="testLimit" value="10" min="1" max="50">
+            <div class="help-text">Number of profiles to scrape in test mode</div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="headless">
+              Run browser in background (headless mode)
+            </label>
+            <div class="help-text">Uncheck to see the browser while scraping (helpful for debugging)</div>
+          </div>
+
+          <div class="form-group">
+            <label for="delay">Delay Between Profiles (seconds)</label>
+            <input type="number" id="delay" value="3" min="1" max="10" step="1">
+            <div class="help-text">Time to wait between scraping each profile (3-5 seconds recommended)</div>
+          </div>
+
+          <div class="form-group">
+            <label for="maxRetries">Max Retries on Error</label>
+            <input type="number" id="maxRetries" value="3" min="1" max="5">
+            <div class="help-text">Number of times to retry if a profile fails to load</div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Form</button>
+          <button type="submit" class="btn btn-primary">⬇️ Download Config File</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="instructions">
+      <strong>📝 Next Steps:</strong>
+      <ol>
+        <li>Fill out the form above with your credentials and preferences</li>
+        <li>Click "Download Config File" to generate <code>aupair-config.json</code></li>
+        <li>Place the downloaded file in: <code>/Users/mishelleweinerman/my-crawler/src/</code></li>
+        <li>Run the scraper with: <code>cd /Users/mishelleweinerman/my-crawler && node src/aupair-scraper.js</code></li>
+        <li>Results will be saved as CSV files in your home directory</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // Tag management
+    const tags = {
+      nationality: [],
+      language: []
+    };
+
+    function addTag(type) {
+      const input = document.getElementById(`${type}Input`);
+      const value = input.value.trim();
+
+      if (value && !tags[type].includes(value)) {
+        tags[type].push(value);
+        renderTags(type);
+        input.value = '';
+      }
+    }
+
+    function removeTag(type, value) {
+      tags[type] = tags[type].filter(tag => tag !== value);
+      renderTags(type);
+    }
+
+    function renderTags(type) {
+      const container = document.getElementById(`${type}Tags`);
+      container.innerHTML = tags[type].map(tag => `
+        <div class="tag">
+          ${tag}
+          <button type="button" onclick="removeTag('${type}', '${tag}')">×</button>
+        </div>
+      `).join('');
+    }
+
+    // Allow Enter key to add tags
+    document.getElementById('nationalityInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTag('nationality');
+      }
+    });
+
+    document.getElementById('languageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTag('language');
+      }
+    });
+
+    // Form submission
+    document.getElementById('configForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Get selected skills
+      const skills = [];
+      document.querySelectorAll('[id^="skill-"]:checked').forEach(checkbox => {
+        skills.push(checkbox.value);
+      });
+
+      // Build config object
+      const config = {
+        credentials: {
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        },
+        filters: {
+          demographics: {
+            ageMin: document.getElementById('ageMin').value || "",
+            ageMax: document.getElementById('ageMax').value || "",
+            nationalities: tags.nationality
+          },
+          languages: tags.language,
+          skills: skills,
+          experience: {
+            childcareExperience: document.getElementById('childcareExp').value,
+            infantExperience: document.getElementById('infantExp').checked
+          },
+          availability: {
+            startDate: document.getElementById('availableFrom').value || "",
+            endDate: document.getElementById('availableUntil').value || ""
+          }
+        },
+        testMode: document.getElementById('testMode').checked,
+        testLimit: parseInt(document.getElementById('testLimit').value),
+        headless: document.getElementById('headless').checked,
+        delayBetweenProfiles: parseInt(document.getElementById('delay').value) * 1000,
+        delayAfterPageChange: 2000,
+        delayAfterSearch: 5000,
+        maxRetries: parseInt(document.getElementById('maxRetries').value),
+        pageTimeout: 30000
+      };
+
+      // Create and download file
+      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'aupair-config.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Show success message
+      alert('✅ Config file downloaded!\n\nPlace it in: /Users/mishelleweinerman/my-crawler/src/\n\nThen run: cd /Users/mishelleweinerman/my-crawler && node src/aupair-scraper.js');
+    });
+
+    function resetForm() {
+      if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+        document.getElementById('configForm').reset();
+        tags.nationality = [];
+        tags.language = [];
+        renderTags('nationality');
+        renderTags('language');
+      }
+    }
+  </script>
+</body>
+</html>
