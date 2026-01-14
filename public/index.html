@@ -306,6 +306,77 @@
       font-size: 13px;
     }
 
+    .admin-section {
+      background: #fef2f2;
+      border: 2px dashed #ef4444;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px;
+    }
+
+    .admin-section h3 {
+      color: #991b1b;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .admin-section p {
+      color: #7f1d1d;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .admin-section input {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .toggle-admin {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin: 20px;
+      display: inline-block;
+    }
+
+    .toggle-admin:hover {
+      background: #fecaca;
+    }
+
+    .status-message {
+      padding: 15px 20px;
+      margin: 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .status-message.success {
+      background: #d1fae5;
+      border-left: 4px solid #10b981;
+      color: #065f46;
+      display: block;
+    }
+
+    .status-message.error {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      color: #991b1b;
+      display: block;
+    }
+
+    .status-message.loading {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      color: #1e40af;
+      display: block;
+    }
+
     @media (max-width: 768px) {
       .two-column {
         grid-template-columns: 1fr;
@@ -326,7 +397,30 @@
 
     <div class="security-notice">
       <strong>🔒 Privacy & Security</strong>
-      <p>All information entered on this page stays in your browser. Nothing is sent to any server. Your credentials are only saved in the downloaded config file on your computer.</p>
+      <p>When you submit this form, your config (including credentials) will be automatically saved to a private GitHub repository. Only authorized users have access.</p>
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <button class="toggle-admin" onclick="toggleAdmin()" type="button">⚙️ Admin Settings (Setup Required)</button>
+
+    <div id="adminSection" class="admin-section" style="display: none;">
+      <h3>🔧 GitHub Integration Setup</h3>
+      <p><strong>One-time setup:</strong> Enter your GitHub Personal Access Token below. This token allows the form to save configs to your private repo.</p>
+
+      <div class="form-group">
+        <label for="githubToken" class="label-required">GitHub Personal Access Token</label>
+        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="help-text">Create at: <a href="https://github.com/settings/tokens/new?scopes=repo&description=AuPair-Config-Generator" target="_blank" style="color: #3b82f6;">github.com/settings/tokens</a> with "repo" scope</div>
+      </div>
+
+      <div class="form-group">
+        <label for="githubRepo">Repository (Owner/Name)</label>
+        <input type="text" id="githubRepo" value="mishweinerman1/aupair-configs" readonly>
+        <div class="help-text">Private repo where configs are saved</div>
+      </div>
+
+      <button type="button" class="btn btn-secondary" onclick="saveAdminSettings()" style="width: auto;">💾 Save Settings</button>
     </div>
 
     <div class="form-content">
@@ -482,23 +576,135 @@
     </div>
 
     <div class="instructions">
-      <strong>📝 Next Steps:</strong>
+      <strong>📝 How to Use:</strong>
       <ol>
-        <li>Fill out the form above with your credentials and preferences</li>
-        <li>Click "Download Config File" to generate <code>aupair-config.json</code></li>
-        <li>Place the downloaded file in: <code>/Users/mishelleweinerman/my-crawler/src/</code></li>
-        <li>Run the scraper with: <code>cd /Users/mishelleweinerman/my-crawler && node src/aupair-scraper.js</code></li>
-        <li>Results will be saved as CSV files in your home directory</li>
+        <li><strong>First time setup (admin only):</strong> Click "Admin Settings" and enter your GitHub token (see below for how to create one)</li>
+        <li>Fill out the form with your Au Pair credentials and search preferences</li>
+        <li>Click "Download Config File" - it will automatically save to GitHub</li>
+        <li>The config will appear in the private repo: <code>mishweinerman1/aupair-configs</code></li>
+        <li>Download the config from GitHub and run the scraper on your computer</li>
+      </ol>
+
+      <strong>🔑 Creating a GitHub Token (Admin Only - One Time):</strong>
+      <ol>
+        <li>Go to: <a href="https://github.com/settings/tokens/new?scopes=repo&description=AuPair-Config-Generator" target="_blank" style="color: #3b82f6;">github.com/settings/tokens/new</a></li>
+        <li>Set description: "AuPair Config Generator"</li>
+        <li>Select scope: <strong>repo</strong> (full control of private repositories)</li>
+        <li>Click "Generate token" at the bottom</li>
+        <li>Copy the token (starts with <code>ghp_</code>) and paste it in Admin Settings above</li>
+        <li><strong>Important:</strong> Save this token somewhere safe - you can't see it again!</li>
       </ol>
     </div>
   </div>
 
   <script>
+    // Admin settings management
+    const ADMIN_STORAGE_KEY = 'aupair_admin_settings';
+
+    function loadAdminSettings() {
+      const saved = localStorage.getItem(ADMIN_STORAGE_KEY);
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          document.getElementById('githubToken').value = settings.token || '';
+          document.getElementById('githubRepo').value = settings.repo || 'mishweinerman1/aupair-configs';
+        } catch (e) {
+          console.error('Failed to load admin settings');
+        }
+      }
+    }
+
+    function saveAdminSettings() {
+      const token = document.getElementById('githubToken').value.trim();
+      const repo = document.getElementById('githubRepo').value.trim();
+
+      if (!token) {
+        alert('⚠️ Please enter a GitHub token');
+        return;
+      }
+
+      const settings = { token, repo };
+      localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(settings));
+      showStatus('success', '✅ Admin settings saved! You can now submit configs.');
+      setTimeout(() => {
+        document.getElementById('adminSection').style.display = 'none';
+      }, 2000);
+    }
+
+    function getAdminSettings() {
+      const saved = localStorage.getItem(ADMIN_STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+    function toggleAdmin() {
+      const section = document.getElementById('adminSection');
+      section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showStatus(type, message) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.className = `status-message ${type}`;
+      statusEl.textContent = message;
+
+      if (type !== 'loading') {
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    async function saveToGitHub(config, username) {
+      const settings = getAdminSettings();
+
+      if (!settings || !settings.token) {
+        throw new Error('GitHub token not configured. Click "Admin Settings" to set it up.');
+      }
+
+      const [owner, repo] = settings.repo.split('/');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      const fileName = `config-${timestamp}-${username.split('@')[0]}.json`;
+      const content = btoa(JSON.stringify(config, null, 2)); // Base64 encode
+
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${fileName}`;
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${settings.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `Add config for ${username}`,
+          content: content,
+          branch: 'main'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save to GitHub');
+      }
+
+      return await response.json();
+    }
+
     // Tag management
     const tags = {
       nationality: [],
       language: []
     };
+
+    // Load admin settings on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAdminSettings();
+    });
 
     function addTag(type) {
       const input = document.getElementById(`${type}Input`);
@@ -542,7 +748,7 @@
     });
 
     // Form submission
-    document.getElementById('configForm').addEventListener('submit', (e) => {
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       // Get selected skills
@@ -551,10 +757,12 @@
         skills.push(checkbox.value);
       });
 
+      const username = document.getElementById('username').value;
+
       // Build config object
       const config = {
         credentials: {
-          username: document.getElementById('username').value,
+          username: username,
           password: document.getElementById('password').value
         },
         filters: {
@@ -584,7 +792,34 @@
         pageTimeout: 30000
       };
 
-      // Create and download file
+      // Try to save to GitHub
+      showStatus('loading', '⏳ Saving config to GitHub...');
+
+      try {
+        await saveToGitHub(config, username);
+        showStatus('success', `✅ Config saved to GitHub successfully! File: config-${new Date().toISOString().split('T')[0]}-${username.split('@')[0]}.json`);
+
+        // Also offer local download as backup
+        setTimeout(() => {
+          if (confirm('Config saved to GitHub! Would you also like to download a local copy?')) {
+            downloadConfig(config);
+          }
+        }, 1000);
+
+      } catch (error) {
+        console.error('GitHub save failed:', error);
+        showStatus('error', `❌ Failed to save to GitHub: ${error.message}`);
+
+        // Fallback to local download
+        setTimeout(() => {
+          if (confirm('GitHub save failed. Download config file locally instead?')) {
+            downloadConfig(config);
+          }
+        }, 1000);
+      }
+    });
+
+    function downloadConfig(config) {
       const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -594,10 +829,8 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
-      // Show success message
-      alert('✅ Config file downloaded!\n\nPlace it in: /Users/mishelleweinerman/my-crawler/src/\n\nThen run: cd /Users/mishelleweinerman/my-crawler && node src/aupair-scraper.js');
-    });
+      showStatus('success', '✅ Config file downloaded!');
+    }
 
     function resetForm() {
       if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
